@@ -27,7 +27,7 @@ export function renderV4(template,snapshot,user,csrf,nonce){
  html=html.replace(/<script(?![^>]*\bnonce=)/g,`<script nonce="${nonce}"`);
  const boot={user:{id:user.id,login:user.login,role:user.role},csrf,versions:snapshot.versions,revision:snapshot.revision};
  const bar=`<style>#collab{position:sticky;top:0;z-index:1000;background:#003366;color:white;padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:14px system-ui}#collab button{background:white;color:#003366;padding:8px 12px;border:0;border-radius:5px}#collab #sync-status{color:#ffe3a3;flex:1}#collab button:disabled{opacity:.5}</style><div id="collab"><b>JPLUS 共用原型</b><span>${user.role}</span><span id="sync-status" role="status">已載入伺服器資料</span><button id="sync-save">送出至伺服器</button><button id="sync-draft">下載未送出草稿</button><button id="sync-refresh">載入最新資料</button><button id="sync-audit">稽核／覆核／帳號</button><button id="sync-backup">匯出公司備份</button><button id="sync-logout">登出</button></div>`;
- html=html.replace(/<body([^>]*)>/,`<body$1>${bar}`);
+ html=html.replace(/<body([^>]*)>/,`<body$1>${bar.replace('<button id="sync-save">','<a href="/guide" target="_blank" rel="noopener" style="color:white">測試操作指南</a><button id="sync-save">')}`);
  // A public request can never receive this protected HTML without a validated session.
  html+=`<script nonce="${nonce}">window.COLLAB_BOOT=${safeJSON(boot)};</script><script nonce="${nonce}" type="module" src="/assets/adapter.js"></script>`;
  return html;

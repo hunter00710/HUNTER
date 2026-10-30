@@ -2,6 +2,8 @@
 
 將既有 V4 戰情室接到登入保護的 API 與關聯式資料庫，保留原本的 BI、會計核對及 13 週情境計算。這是可測試原型，尚未正式部署。
 
+Windows首次操作可直接看[本機部署與全流程測試](docs/LOCAL_WINDOWS.md)：下載ZIP後依序雙擊01_Setup.cmd、02_Start.cmd；登入後內建`/guide`提供12階段驗收、此次測試PO及人工勾選紀錄。不需Git、Docker或npm install。01_Setup建立獨立UAT資料庫與五個測試角色，不覆蓋既有資料；只有匯入原V4模式含完整BI。
+
 ## 快速啟動：先用合成資料
 
 需求：Node.js **24.22.1 至 24.x**。無執行期第三方套件，不需 `npm install`。

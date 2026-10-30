@@ -10,9 +10,10 @@ import {openStore,seed,snapshot} from '../src/store.js';
 import {addUser} from '../src/auth.js';
 import {parseV4} from '../src/v4.js';
 import {createApp} from '../src/server.js';
+import {initializeLocal} from './local.js';
 const {JSDOM,VirtualConsole}=await import(pathToFileURL(process.env.JPLUS_JSDOM_PATH).href);
-const dir=mkdtempSync(join(tmpdir(),'jplus-v4-')),db=openStore(join(dir,'test.sqlite'));
-seed(db,parseV4(readFileSync(process.env.V4_SOURCE,'utf8')),'test');
+const dir=mkdtempSync(join(tmpdir(),'jplus-v4-'));
+const local=initializeLocal({root:dir,sourceHTML:readFileSync(process.env.V4_SOURCE,'utf8'),adminPassword:randomBytes(20).toString('hex'),port:31992}),db=openStore(local.config.dbPath);
 const password=randomBytes(20).toString('hex');addUser(db,{login:'smoke-test',password,role:'finance'});
 const server=createApp({db,origin:'http://127.0.0.1:31992'});await new Promise(r=>server.listen(31992,'127.0.0.1',r));
 const origin='http://127.0.0.1:31992',doms=[],errors=[];
@@ -53,7 +54,12 @@ try{
  await c.window.document.getElementById('sync-save').onclick();
  assert.equal(snapshot(db).state.control.receipts.length,1);
  assert.equal(snapshot(db).state.control.receipts[0].ref,'SYNTHETIC-DOM-RECEIPT');
+ const d=await client();d.window.eval(`AP.payment(${JSON.stringify(local.plan.payable)})`);
+ for(const [id,value]of Object.entries({pyDate:local.plan.asof,pyAmount:'100',pyRef:'SYNTHETIC-DOM-PAYMENT',pyNote:'Synthetic DOM payment'}))d.window.document.getElementById(id).value=value;
+ d.window.document.getElementById('pySave').click();await d.window.document.getElementById('sync-save').onclick();
+ assert.equal(snapshot(db).state.ap.payments.length,1);
+ assert.equal(snapshot(db).state.ap.payments[0].ref,'SYNTHETIC-DOM-PAYMENT');
  for(const tab of ['overview','orders','financial','forecast','investment','audit','source','payables','collection','control'])c.window.eval(`view(${JSON.stringify(tab)})`);
  assert.deepEqual(errors,[]);
- console.log(JSON.stringify({domErrors:errors.length,ordersRendered:36,payablesLoaded:20,serverSave:true,receiptFormServerSave:true,twoClientConflict:true,conflictDraftPreserved:true,realBrowserTest:false}));
+ console.log(JSON.stringify({domErrors:errors.length,localV4Setup:true,ordersRendered:36,payablesLoaded:20,serverSave:true,receiptFormServerSave:true,paymentFormServerSave:true,twoClientConflict:true,conflictDraftPreserved:true,realBrowserTest:false}));
 }finally{for(const d of doms)d.window.close();await new Promise(r=>server.close(r));db.close();rmSync(dir,{recursive:true,force:true});}

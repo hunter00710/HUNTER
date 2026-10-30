@@ -1,4 +1,6 @@
 data/
+local/
+imports/
 private-source/
 *.db*
 *.sqlite*

@@ -1,5 +1,7 @@
 .git
 data
+local
+imports
 private-source
 *.sqlite*
 *.db*

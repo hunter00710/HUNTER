@@ -6,7 +6,7 @@ import {openStore,snapshot,change,exportBackup,documents,revision,Fault,requireT
 import {session,login,cookie,csrfForSession,addUser,passwordHash} from './auth.js';
 import {renderV4} from './v4.js';
 const root=new URL('../',import.meta.url);
-const assets={'/assets/adapter.js':'web/adapter.js','/assets/state.js':'src/state.js','/assets/desk.js':'web/desk.js'};
+const assets={'/assets/adapter.js':'web/adapter.js','/assets/state.js':'src/state.js','/assets/desk.js':'web/desk.js','/assets/guide.js':'web/guide.js'};
 export function createApp({db,origin='http://127.0.0.1:3000',secure=false}){
  requireThat(!secure||origin.startsWith('https://'),500,'正式模式需要HTTPS APP_ORIGIN');
  return http.createServer(async(req,res)=>{
@@ -42,6 +42,11 @@ export function createApp({db,origin='http://127.0.0.1:3000',secure=false}){
     return send(200,readFileSync(new URL('web/desk.html',root),'utf8').replaceAll('@@NONCE@@',nonce).replace('@@BOOT@@',boot),'text/html');
    }
    if(path==='/api/me'&&method==='GET')return send(200,{id:user.id,login:user.login,role:user.role,scope:JSON.parse(user.scope)});
+   if(path==='/guide'&&method==='GET')return send(200,readFileSync(new URL('web/guide.html',root),'utf8').replaceAll('@@NONCE@@',nonce),'text/html');
+   if(path==='/api/uat-plan'&&method==='GET'){
+    requireThat(fullScope(user)&&user.role!=='sales',403,'此測試計畫僅供全公司資料角色');
+    const d=documents(db);requireThat(d.localUAT,404,'此資料庫未經本機UAT初始化');return send(200,JSON.parse(d.localUAT));
+   }
    if(path==='/api/revision'&&method==='GET')return send(200,{revision:revision(db)});
    if(path==='/api/snapshot'&&method==='GET'){requireThat(fullScope(user)&&user.role!=='sales',403,'完整原表僅供全公司資料權限');const s=snapshot(db);delete s.entities;return send(200,s);}
    if(path==='/api/changes'&&method==='POST')return send(200,change(db,user,body.changes));
