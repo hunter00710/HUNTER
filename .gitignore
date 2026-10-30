@@ -1,0 +1,13 @@
+data/
+local/
+imports/
+private-source/
+*.db*
+*.sqlite*
+*.backup.json
+*.html.source
+.env*
+!*.example
+node_modules/
+coverage/
+test-results/

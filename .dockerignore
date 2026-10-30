@@ -1,0 +1,10 @@
+.git
+data
+local
+imports
+private-source
+*.sqlite*
+*.db*
+*.backup.json
+.env*
+node_modules
