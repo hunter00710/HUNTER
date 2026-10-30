@@ -1,0 +1,8 @@
+.git
+data
+private-source
+*.sqlite*
+*.db*
+*.backup.json
+.env*
+node_modules

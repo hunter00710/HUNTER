@@ -1,0 +1,13 @@
+{
+  "name": "jplus-collaboration-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=24.22.1 <25"},
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js",
+    "demo": "node scripts/admin.js demo",
+    "admin": "node scripts/admin.js"
+  }
+}

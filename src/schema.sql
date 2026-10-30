@@ -1,0 +1,64 @@
+PRAGMA foreign_keys=ON;
+PRAGMA journal_mode=WAL;
+PRAGMA busy_timeout=5000;
+CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+INSERT OR IGNORE INTO meta VALUES('schema','1'),('revision','0');
+CREATE TABLE IF NOT EXISTS users(
+ id TEXT PRIMARY KEY, login TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
+ role TEXT NOT NULL CHECK(role IN ('admin','finance','reviewer','sales','viewer')),
+ scope TEXT NOT NULL DEFAULT '["*"]', active INTEGER NOT NULL DEFAULT 1,
+ version INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS sessions(
+ token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),
+ csrf_hash TEXT NOT NULL,expires INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS login_limits(key TEXT PRIMARY KEY,failures INTEGER NOT NULL,until_ms INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS documents(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS orders(
+ po TEXT PRIMARY KEY,source TEXT NOT NULL,data TEXT NOT NULL,
+ amount_u INTEGER NOT NULL CHECK(amount_u>=0),paid_base_u INTEGER,
+ version INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS payables(
+ id TEXT PRIMARY KEY,source TEXT NOT NULL,data TEXT NOT NULL,
+ currency TEXT NOT NULL CHECK(currency IN ('CNY','USD','TWD')),
+ total_u INTEGER NOT NULL CHECK(total_u>=0),paid_base_u INTEGER NOT NULL,
+ version INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS plans(
+ id TEXT PRIMARY KEY,kind TEXT NOT NULL CHECK(kind IN ('ar','ap')),
+ po TEXT REFERENCES orders(po),payable_id TEXT REFERENCES payables(id),
+ source TEXT,data TEXT NOT NULL,amount_u INTEGER NOT NULL CHECK(amount_u>0),
+ version INTEGER NOT NULL DEFAULT 1,
+ CHECK((kind='ar' AND po IS NOT NULL AND payable_id IS NULL) OR
+       (kind='ap' AND payable_id IS NOT NULL AND po IS NULL))
+);
+CREATE TABLE IF NOT EXISTS receipts(
+ id TEXT PRIMARY KEY,ref TEXT NOT NULL UNIQUE,date TEXT NOT NULL,
+ bank_u INTEGER NOT NULL CHECK(bank_u>=0),tax_u INTEGER NOT NULL CHECK(tax_u>=0),
+ fee_u INTEGER NOT NULL CHECK(fee_u>=0),data TEXT NOT NULL,
+ created_by TEXT NOT NULL REFERENCES users(id),version INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS allocations(
+ receipt_id TEXT NOT NULL REFERENCES receipts(id),seq INTEGER NOT NULL,
+ po TEXT NOT NULL REFERENCES orders(po),plan_id TEXT REFERENCES plans(id),
+ net_u INTEGER NOT NULL CHECK(net_u>0),data TEXT NOT NULL,
+ PRIMARY KEY(receipt_id,seq)
+);
+CREATE TABLE IF NOT EXISTS payments(
+ id TEXT PRIMARY KEY,payable_id TEXT NOT NULL REFERENCES payables(id),
+ ref TEXT NOT NULL UNIQUE,date TEXT NOT NULL,amount_u INTEGER NOT NULL CHECK(amount_u>0),
+ data TEXT NOT NULL,created_by TEXT NOT NULL REFERENCES users(id),version INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS reviews(id TEXT PRIMARY KEY,data TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS settings(id TEXT PRIMARY KEY,data TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS audit(
+ seq INTEGER PRIMARY KEY AUTOINCREMENT,at TEXT NOT NULL,actor TEXT NOT NULL,
+ action TEXT NOT NULL,resource TEXT NOT NULL,before_json TEXT,after_json TEXT,
+ prev_hash TEXT NOT NULL,hash TEXT NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'audit is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'audit is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS source_order_immutable BEFORE UPDATE OF source ON orders BEGIN SELECT RAISE(ABORT,'source is immutable'); END;
+CREATE TRIGGER IF NOT EXISTS source_payable_immutable BEFORE UPDATE OF source ON payables BEGIN SELECT RAISE(ABORT,'source is immutable'); END;
