@@ -1,0 +1,98 @@
+{
+  "version": "V0.1",
+  "batch": "001–010",
+  "reviewer": "Hunter",
+  "status": "待審",
+  "pages": [
+    {
+      "page": 1,
+      "title": "mSAP 改良型半加成法是什麼？",
+      "status": "待審",
+      "technical_correction": "區分銅箔型底銅與沉積種子層；應用改採條件式描述，不把所有高速板視為 mSAP。",
+      "comments": "",
+      "question": "為什麼 mSAP 在圖形電鍍後，還需要閃蝕？",
+      "answer": "退膜後，線路間仍有連續底銅；必須移除才能形成電氣隔離。"
+    },
+    {
+      "page": 2,
+      "title": "減成法 → mSAP → SAP",
+      "status": "待審",
+      "technical_correction": "SAP 更正為半加成法；撤除普遍適用的線寬門檻與必然取代敘述。",
+      "comments": "",
+      "question": "線寬要求變小，是否必然要把減成法換成 SAP？",
+      "answer": "不必然。需同時評估材料、銅厚、設備、可靠度、產量及總成本。"
+    },
+    {
+      "page": 3,
+      "title": "傳統減成法：側蝕如何形成？",
+      "status": "待審",
+      "technical_correction": "把原圖 Mask Opening 改成保留銅線的遮罩寬；標示簡化公式的假設與量測位置。",
+      "comments": "",
+      "question": "比較兩種銅厚的側蝕，必須先固定哪些條件？",
+      "answer": "至少固定圖形、藥液與設備條件，並確認量測高度及蝕刻終點；不能只比較銅厚。"
+    },
+    {
+      "page": 4,
+      "title": "mSAP 線路形成的完整原理",
+      "status": "待審",
+      "technical_correction": "補齊退膜步驟；修正原圖「未圖形區底銅保留」易造成的誤解。",
+      "comments": "",
+      "question": "退膜後看到兩條凸起銅線，是否已經完成電氣隔離？",
+      "answer": "沒有。還要確認兩條線之間的背景底銅已經被閃蝕清除。"
+    },
+    {
+      "page": 5,
+      "title": "mSAP 與 SAP 的核心區別",
+      "status": "待審",
+      "technical_correction": "將原圖廣泛厚度描述改為可追溯的產品例，並補充命名與路線差異。",
+      "comments": "",
+      "question": "看到「100 nm 銅層」，能否直接判定整套流程一定是 SAP？",
+      "answer": "不能。還要確認導電層形成方式、材料系統與完整路線；術語在 amSAP 等變體中可能有差異。"
+    },
+    {
+      "page": 6,
+      "title": "四種線路製造工藝怎麼比較？",
+      "status": "待審",
+      "technical_correction": "移除 ETS 固定開槽配方及「最好」排名；保留四路線主題與結構比較。",
+      "comments": "",
+      "question": "ETS 和 SAP 是否一定互斥？",
+      "answer": "不一定。ETS 描述嵌入式結構，SAP 描述線路形成方式，兩者可以有交集。"
+    },
+    {
+      "page": 7,
+      "title": "梯形與近矩形線路的幾何差異",
+      "status": "待審",
+      "technical_correction": "增加側壁角定義，刪除近矩形必然低損耗／阻抗穩定的絕對敘述。",
+      "comments": "",
+      "question": "兩條線的頂寬相同，為何阻抗和電阻仍可能不同？",
+      "answer": "底寬、銅厚、介質與參考平面等條件可能不同；頂寬一個數字不足以描述截面。"
+    },
+    {
+      "page": 8,
+      "title": "50/50 → 30/30 → 20/20 → 15/15 µm",
+      "status": "待審",
+      "technical_correction": "原圖無來源敏感度數值曲線，改成可重算的尺寸算例與明確標示的定性矩陣。",
+      "comments": "",
+      "question": "為什麼同樣的 2 µm 線寬損失，15 µm 線路更敏感？",
+      "answer": "相對損失為 13.3%，而 50 µm 線路為 4.0%；相同絕對誤差占用更大的尺寸預算。"
+    },
+    {
+      "page": 9,
+      "title": "mSAP 完整製造流程",
+      "status": "待審",
+      "technical_correction": "更正盲孔尺寸單位，補上貼膜、顯影、帶膜電鍍、銅箔／載體路線差異。",
+      "comments": "",
+      "question": "除膠渣完成，就代表孔壁已具備可電鍍的導電層嗎？",
+      "answer": "不代表。除膠渣是前處理；仍需依路線完成活化／金屬化，並確認孔壁連續覆蓋。"
+    },
+    {
+      "page": 10,
+      "title": "mSAP 完整技術知識地圖",
+      "status": "待審",
+      "technical_correction": "保留七領域架構，補充量測限制與跨站閉環，不編造良率提升數字。",
+      "comments": "",
+      "question": "AOI、切片與電性結果不一致時，應先查什麼？",
+      "answer": "先確認量測目的、位置、抽樣與量測能力，再對照同一批次的製程履歷；不能只憑單一工具判定原因。"
+    }
+  ]
+}
